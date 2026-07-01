@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+.workbuddy/
+data/
+exports/
+report_*.json
+.env
+*.log
+.streamlit/
+.vscode/
+.idea/
