@@ -1,7 +1,3 @@
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 import streamlit as st
 import sys, os, time, json, re, io, random, chardet
 import pandas as pd
@@ -15,7 +11,7 @@ from openai import OpenAI
 # 设置页面
 st.set_page_config(page_title="DeepSeek-R1 · 虚假新闻检测系统", page_icon="⚖️", layout="wide", initial_sidebar_state="expanded")
 
-# 强制 UTF-8
+# 强制UTF-8
 if sys.platform == "win32":
     os.environ["PYTHONIOENCODING"] = "utf-8"
     try: sys.stdout.reconfigure(encoding="utf-8")
@@ -23,9 +19,7 @@ if sys.platform == "win32":
     try: sys.stderr.reconfigure(encoding="utf-8")
     except: pass
 
-# ============================================================
-# 0. 自定义浅色主题 CSS
-# ============================================================
+# 自定义主题CSS
 LIGHT_CSS = """
 <style>
 /* 全局浅色主题变量 */
@@ -243,7 +237,7 @@ hr { border-color: var(--border) !important; }
 """
 st.markdown(LIGHT_CSS, unsafe_allow_html=True)
 
-# 1. 导入核心模块
+# 导入核心模块
 
 try:
     from main import (FakeNewsDetector, DetectionResult, CloudModelClient, MockModelClient,
@@ -273,9 +267,7 @@ for key, default in [
     if key not in st.session_state:
         st.session_state[key] = default
 
-# ============================================================
-# 3. 辅助渲染函数
-# ============================================================
+# 辅助渲染函数
 def render_credibility_badge(c):
     m = {"高": "badge-high", "中": "badge-medium", "低": "badge-low", "极低": "badge-critical"}
     e = {"高": "✓", "中": "◈", "低": "✕", "极低": "⊘"}
@@ -287,10 +279,7 @@ def render_type_tags(types):
               "信息缺失":"tag-gray","真实信息":"tag-green"}
     return "".join(f'<span class="tag {colors.get(t,"tag-gray")}">{t}</span>' for t in types)
 
-# ============================================================
-# 4. 各功能页面渲染函数
-# ============================================================
-
+# 各功能页面渲染函数
 def render_dashboard():
     """仪表盘"""
     st.markdown("""
@@ -521,7 +510,7 @@ def render_single_detect():
             with rc1:
                 if result.risk_analysis:
                     st.markdown(f"** 风险分析**\n\n{result.risk_analysis}")
-                st.caption(f"🔧 模板：{template} · ⏱ {result.processing_time:.3f}s")
+                st.caption(f" 模板：{template} · ⏱ {result.processing_time:.3f}s")
             with rc2:
                 if result.summary:
                     st.markdown(f"** 总结**\n\n{result.summary}")
@@ -1319,9 +1308,7 @@ def render_export():
                            use_container_width=True)
         st.caption(f" {len(csv_str.encode('utf-8-sig')):,} 字节")
 
-# ============================================================
-# 5. 主应用
-# ============================================================
+# 主应用
 def main():
     # 未登录：显示登录界面
     if not st.session_state.logged_in:
@@ -1353,7 +1340,7 @@ def main():
 
             provider_list = ["deepseek-r1", "bailian", "deepseek", "openai", "custom"]
             provider_names = {
-                "deepseek-r1": " DeepSeek-R1 （推荐）",
+                "deepseek-r1": " DeepSeek-R1（推荐）",
                 "bailian": " 阿里云百炼（通义千问）",
                 "deepseek": " DeepSeek-V3",
                 "openai": " OpenAI GPT-4o",
@@ -1361,14 +1348,14 @@ def main():
             }
             provider = st.selectbox("选择模型提供商", provider_list,
                                     format_func=lambda x: provider_names[x], key="login_provider")
-            api_key = st.text_input("API Key", type="password", placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", key="login_api_key")
+            api_key = st.text_input("API Key", type="password", placeholder="", key="login_api_key")
             if provider == "custom":
                 custom_url = st.text_input("API 地址", placeholder="https://dashscope.aliyuncs.com/compatible-mode/v1")
                 custom_model = st.text_input("模型名称", placeholder="deepseek-reasoner")
             else:
                 custom_url, custom_model = "", ""
 
-            use_mock = st.checkbox(" 使用模拟模式（无需 API Key）", help="适合演示和开发调试")
+            use_mock = st.checkbox(" 使用模拟模式（无需API Key）", help="适合演示和开发调试")
 
             btn_col1, btn_col2 = st.columns(2)
             with btn_col1:
@@ -1435,7 +1422,7 @@ def main():
             """, unsafe_allow_html=True)
         return
 
-    # ========== 已登录：主界面 ==========
+    # 已登录：主界面
     # 侧边栏导航
     with st.sidebar:
         st.markdown("""
@@ -1483,7 +1470,6 @@ def main():
             st.session_state.page = "dashboard"
             st.rerun()
 
-    # 主区域根据 page 渲染
     page = st.session_state.get("page", "dashboard")
     if page == "dashboard":
         render_dashboard()
